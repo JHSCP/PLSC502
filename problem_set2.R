@@ -5,33 +5,50 @@ library(tidyverse)
 
 unique(gay$treatment)
 
-baseline <- gay %>%
-  filter(wave == 1) %>%
-  filter(treatment %in% c("Same-Sex Marriage Script by Gay Canvasser",
-                          "Same-Sex Marriage Script by Straight Canvasser",
-                          "No Contact"))
 
-tapply(baseline$ssm, baseline$treatment, mean, na.rm = TRUE)
-
-
-
-#The "No Contact" group, the control, has a mean of approximately 3.250, while the two treatment groups have means of 3.256 and 3.193.
-#Therefore, it is possible to conclude that the mean attitude scores for the three groups are very similar at the baseline in wave 1.
-
-
-##### 7 #####
-followup <- gay %>%
+gay %>% 
+  filter(study == 1) %>% 
+  filter(wave == 1) %>% 
   filter(treatment %in% c("Same-Sex Marriage Script by Gay Canvasser",
                           "Same-Sex Marriage Script by Straight Canvasser",
                           "No Contact")) %>% 
-  arrange(study, wave) 
+  group_by(treatment) %>% 
+  summarise(freq= n())
 
+
+
+##### 7 #####
+
+followup <- gay %>%
+  filter(wave <= 2) %>% 
+  filter(treatment %in% c("Same-Sex Marriage Script by Gay Canvasser",
+                          "Same-Sex Marriage Script by Straight Canvasser",
+                          "No Contact")) 
+
+str(gay)
 
 ###### DiD approach ######
-1
-2
 
-treat
-wo treat
+# within group difference (after (=wave2) - before(=wave1))
+estimatons <- followup %>% 
+  group_by(wave, treatment) %>% 
+  summarise(estimations = mean(ssm)) %>% 
+  pivot_wider(names_from = wave, 
+              values_from = estimations,
+              names_prefix = "wave")  %>% 
+  mutate(change = wave2 - wave1)
+
+
+change_control  <- estimatons$change[estimatons$treatment == "No Contact"]
+change_gay      <- estimatons$change[estimatons$treatment == "Same-Sex Marriage Script by Gay Canvasser"]
+change_straight <- estimatons$change[estimatons$treatment == "Same-Sex Marriage Script by Straight Canvasser"]
+
+# between units difference (treated - control)
+DiD_gay      <- change_gay - change_control
+DiD_straight <- change_straight - change_control
+
+DiD_gay
+DiD_straight
+
 
 
