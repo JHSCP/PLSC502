@@ -28,7 +28,6 @@ followup <- gay %>%
 str(gay)
 
 ###### DiD approach ######
-
 # within group difference (after (=wave2) - before(=wave1))
 estimatons <- followup %>% 
   group_by(wave, treatment) %>% 
