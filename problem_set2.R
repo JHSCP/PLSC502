@@ -33,8 +33,9 @@ estimatons <- followup %>%
   group_by(wave, treatment) %>% 
   summarise(estimations = mean(ssm)) %>% 
   pivot_wider(names_from = wave, 
-              values_from = estimations,
-              names_prefix = "wave")  %>% 
+              values_from = estimations)  %>%
+  rename(wave1 = "1",
+         wave2 = "2") %>%  
   mutate(change = wave2 - wave1)
 
 
@@ -48,6 +49,3 @@ DiD_straight <- change_straight - change_control
 
 DiD_gay
 DiD_straight
-
-
-
