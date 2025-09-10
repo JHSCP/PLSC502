@@ -13,39 +13,21 @@ gay %>%
                           "Same-Sex Marriage Script by Straight Canvasser",
                           "No Contact")) %>% 
   group_by(treatment) %>% 
-  summarise(freq= n())
+  summarise(N= n())
 
 
 
 ##### 7 #####
 
-followup <- gay %>%
+followup_effect <- gay %>%
   filter(wave <= 2) %>% 
+  filter(study == 1) %>% 
   filter(treatment %in% c("Same-Sex Marriage Script by Gay Canvasser",
                           "Same-Sex Marriage Script by Straight Canvasser",
-                          "No Contact")) 
-
-str(gay)
-
-###### DiD approach ######
-# within group difference (after (=wave2) - before(=wave1))
-estimatons <- followup %>% 
-  group_by(wave, treatment) %>% 
-  summarise(estimations = mean(ssm)) %>% 
+                          "No Contact")) %>% 
+  group_by(treatment, wave) %>% 
+  summarise(mean = mean(ssm)) %>% 
   pivot_wider(names_from = wave, 
-              values_from = estimations)  %>%
-  rename(wave1 = "1",
-         wave2 = "2") %>%  
-  mutate(change = wave2 - wave1)
-
-
-change_control  <- estimatons$change[estimatons$treatment == "No Contact"]
-change_gay      <- estimatons$change[estimatons$treatment == "Same-Sex Marriage Script by Gay Canvasser"]
-change_straight <- estimatons$change[estimatons$treatment == "Same-Sex Marriage Script by Straight Canvasser"]
-
-# between units difference (treated - control)
-DiD_gay      <- change_gay - change_control
-DiD_straight <- change_straight - change_control
-
-DiD_gay
-DiD_straight
+              values_from = mean,
+              names_prefix = "wave") %>% 
+  mutate(t_effect = wave2 - wave1)
