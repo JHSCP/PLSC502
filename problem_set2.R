@@ -13,7 +13,8 @@ gay %>%
                           "Same-Sex Marriage Script by Straight Canvasser",
                           "No Contact")) %>% 
   group_by(treatment) %>% 
-  summarise(N= n())
+  summarise(N= n()) %>% 
+  print()
 
 
 
@@ -30,4 +31,5 @@ followup_effect <- gay %>%
   pivot_wider(names_from = wave, 
               values_from = mean,
               names_prefix = "wave") %>% 
-  mutate(t_effect = wave2 - wave1)
+  mutate(t_effect = wave2 - wave1) %>% 
+  print()
